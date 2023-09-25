@@ -1,0 +1,44 @@
+# REDDIT THINGS
+
+def scrape_reddit(the_subreddit, pages = 40):
+    all_posts = []
+    first_url = 'http://www.reddit.com/r/' + the_subreddit + '.json'
+    url = first_url
+    list_of_df = []
+    
+    # Get Sanity Check:
+    quick_check = requests.get(first_url, headers = {'User-agent':'Electronic Goddess'})
+    if int(str(quick_check)[11:14]) == 200:
+        print("Get request successful.")
+        time.sleep(3)
+        print("Initiating Scrape...")
+    else:
+        print("Get request not 200, instead recieved:" + str(quick_check))
+        return
+    
+    # Scraping:
+    for round in range(pages):
+        try:
+            res = requests.get(url, headers = {'User-agent':'Electronic Goddess'})
+            data = res.json()    # Cut around here if we need other bits of info
+            list_of_posts = data['data']['children']
+            all_posts = all_posts + list_of_posts
+            after = data['data']['after']
+            url = first_url +'?after=' + after
+            print('Round: '+ str(round + 1))
+            time.sleep(1)        # Can be adjusted
+        except:
+            print('Limit likely hit.  Returning available posts.')
+            break
+#        return all_posts # This can be un-commented out for a straight forward raw scrape
+
+    # Formats the parts we care about into a list of dictionaries that'll become the dataframe
+    for i in range(len(all_posts)):
+        index_dictionary = {
+                'title' : all_posts[i]['data']['title'],
+                'selftext': all_posts[i]['data']['selftext'],
+                'subreddit' : all_posts[i]['data']['subreddit']
+            }
+        list_of_df.append(index_dictionary)
+    return pd.DataFrame(list_of_df, columns = ['title','selftext','subreddit'])
+

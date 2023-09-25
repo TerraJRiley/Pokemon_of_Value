@@ -1,0 +1,54 @@
+# Scraping Libraries
+import requests
+import re
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from time import sleep
+from random import randint
+NoneType = type(None)
+
+#========================================================
+# Selenium
+from selenium.webdriver.chrome.options import Options
+def open_browser(alt_user_name = 'Thank you for your website'):
+    # opts = Options()  # Currently Broken??
+    # opts.add_argument("user-agent=" + str(alt_user_name))
+    path = '../Garage/chromedriver'         # Path to Chromedriver
+    return webdriver.Chrome(executable_path = path) #, options=opts)
+from selenium.webdriver.common.keys import Keys
+
+
+
+def open_browser(alt_user_name = 'Thank you for your website'):
+    path = '../Garage/chromedriver'         # Path to Chromedriver
+    return webdriver.Chrome(executable_path = path)
+
+bro = open_browser()
+bro.get(url) # Move to page
+bro.back()
+bro.find_element_by_css_selector('CSS selector').click()
+bro.find_element_by_css_selector('CSS selector').text()
+search = bro.find_element_by_id("HTML ID?")        # Locate searchbar
+search.send_keys('words')                   # Input search
+search.submit() 
+
+# Requests and Beautiful Soup
+html = BeautifulSoup(requests.get(url, headers = {'User-agent':'Electronic Goddess'}).text)
+# Long w/ Status Code
+get_request = requests.get(url, headers = {'User-agent':'Electronic Goddess'})
+get_request.status_code
+html = BeautifulSoup(get_request.text)
+
+# find things via CSS Selector(s)
+html.select()
+html.select_one()
+
+
+re.findall('[\w]+<\/h4>',document)[0]
+re.search(search_term.capitalize(), element.text)
+
+#========================================================
+# Related
+def funct_sleep():
+    sleep((random.randint(0,2000)/1000) + 0.5)
+    return

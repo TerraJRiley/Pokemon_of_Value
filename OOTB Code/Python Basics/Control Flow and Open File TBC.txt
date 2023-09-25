@@ -1,0 +1,43 @@
+"WHILE STATEMENT"
+"""
+Iterate over the following sentence repeatedly, counting the number of vowels in the sentence until you have tallied one million. Print out the number of iterations it took to reach that amount."""
+
+sentence = "A MAN KNOCKED ON MY DOOR AND ASKED FOR A SMALL DONATION TOWARDS THE LOCAL SWIMMING POOL SO I GAVE HIM A GLASS OF WATER"
+
+iterations = 0
+vowels = 0
+while True:
+    iterations += 1
+    for char in sentence:
+        if char in 'AEIOU':
+            vowels += 1
+    if vowels >= 1000000:
+        break
+print('iterations:', iterations)
+print('vowels:', vowels)
+    
+
+"WITH STATEMENT"
+"""13. Load coffee preference data from file and print¶
+The code to load in the data is provided below.
+
+The with open(..., 'r') as f: opens up a file in "read" mode (rather than "write"), and assigns this opened file to f.
+
+We can then use the .readlines() built-in function to split the csv file on newlines and assign it to the variable lines.
+"""
+
+with open('../datasets/coffee-preferences.csv','r') as f:
+    lines = f.readlines()
+
+
+# pass continures loop while Break pops out of whole loop?
+
+
+
+
+
+test_value = 
+print(test_value)
+def fun_test(value):
+	return value
+fun_test(test_Value

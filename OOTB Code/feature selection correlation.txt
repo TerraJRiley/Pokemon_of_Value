@@ -1,0 +1,4 @@
+corrs = df.corr()[['Target']]
+mask = abs(corrs['Target']) > 0.05
+above_corr = [i for i in corrs[mask].index if i != 'Target']
+above_corr

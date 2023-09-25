@@ -1,0 +1,198 @@
+Imports
+
+import numpy as np
+import pandas as pd
+
+## Cleaning (For Human Consumption)
+
+# Simple EDAs
+
+df.dtypes# Return column data types
+df.describe() #(returns count, mean, std, min, and %iles)???
+df.info()
+df['col1'].std() # Standard Deviation
+
+
+# Main ways to adjust indexes
+df.reset_index(inplace=True)
+df.set_index('column', inplace = True)
+df = df.reindex(['cols'], axis = 1)
+
+# Dictionary Method for renaming
+df.rename(columns={}, inplace=True)
+df.rename({                  #alt method...
+    'Old Name' : 'New_name'
+}, axis = 1, inplace = True)
+
+
+# SORT VALUES
+df['column'].sort_values(ascending = False)
+
+# Nulls
+df['column'].fillna('¯\_(ツ)_/¯')
+df.isna().sum()
+
+# Get Dummies
+pd.get_dummies(titanic['col'])
+
+# Concat
+the_dfs = [df_one,df_two]
+df_main = pd.concat(the_dfs, sort=False, axis = 1)
+
+# Dropping columns that had Errors
+mask = df['col'] == 'Error'
+df.drop(df[mask].index, inplace = True)
+
+# Dropping Duplicates
+df.drop_duplicates(inplace = True)
+
+# Map Function Starter
+def map_funct(cell):
+    return cell
+df['column'] = df['column'].map(lambda x: map_funct(x))
+
+
+# Masks
+mask = df['column'] <=> something 
+df = df[mask]
+
+df[~mask] (Select opposite of the mask)
+df[(df['col1'] > num) & (df['col2'] < num)]
+df[(df['col1'] > num) | (df['col2'] > num)]
+df[ df['col'].isin([num, num]) ] #return rows with specific values(?)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Prepping (for Model Consumption)
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, stratify = y, random_state=42)
+
+# Model Prep
+from sklearn.model_selection import train_test_split, cross_val_score
+
+# Scalers
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures, MinMaxScaler, Normalizer#, Binarizer
+X = StandardScaler().fit_transform(X)
+X = MinMaxScaler().fit_transform(X)
+X = Normalizer().fit_transform(X)
+
+pd.DataFrame(X_scaled, columns=features).head()
+
+
+
+
+# Feature Engineering (New Features)
+
+
+# Bootstrapping (Not our code, copied from DSI)
+
+def bootstrap_sample(values, statistic, num_samples): 
+    bootstrap_statistics = []
+    
+    for _ in range(num_samples):
+        subset = np.random.choice(values, size = 1000, replace =True)
+        stat = statistic(subset)
+        bootstrap_statistics.append(stat)
+        
+    return bootstrap_statistics 
+
+#==============================================
+from sklearn.preprocessing import PolynomialFeatures
+
+# Poly Features
+poly = PolynomialFeatures(include_bias=False)
+features = ['col1', 'col2', 'col3']
+X = df[features]
+y = df['target']
+
+X_poly = poly.fit_transform(X)
+X_poly[:5, :]
+
+poly.get_feature_names(features)
+
+pd.DataFrame(X_poly, columns=poly.get_feature_names(features)).head()
+
+# Copied over from the PCA lession
+
+from sklearn.decomposition import PCA
+pca = PCA()
+
+pca = pca.fit(X_train_scaled, y_train)
+
+pca_train = pca.transform(X_train)
+pca_test = pca.transform(X_test_scaled)
+
+#==============================================
+
+
+explained_variance = pca.explained_variance_ratio_
+#print(explained_variance)
+cumulative_explained_variance = np.cumsum(explained_variance)
+for i in cumulative_explained_variance:
+    print(i)
+
+#==============================================
+X = PCA(n_components= 
+        components_or_alteredfeatures_in_model).fit_transform(X)  # Is poly features wrapped up in PCA already???
+
+VarianceThreshold # Remove features that have the same value in more that XX% of the column
+# Used to cut out potentially high variance risk columns by identifying the ones with, for example: 
+# 10% == 1, and 90% == 0
+
+
+
+
+
+
+
+
+#====================================
+# Random Bullcrap
+
+
+
+# Computing Standard Deviation with list comprehension & no loops (don't know why it's "pop"
+def pop_std(the_column):
+    return round(((sum([(x - the_column.mean())**2 for x in the_column]))/len(the_column))**(1/2))
+pop_std(test_df['Sat_Total'])
+
+# Alternative remaping code
+df['column'] = [float(x.replace('example','')) for x in df['column']]
+
+
+# Using .items() to make a column into a dictionary
+dict = {}
+for key, value in df['column'].items():
+    dict[key] = value
+
+# Scales
+# Scaled
+tv_mean = df['TV'].mean()
+((df['TV'] - tv_mean) / df['TV'].std(ddof=0)).head() #Manually
+
+
+
+----------------------------------------------
+pd.scatter_matrix(df) # Alt sns.pairplot?
+df.mean().sort_values().plot(style = '.') # Good for organizing things when otherwise random.

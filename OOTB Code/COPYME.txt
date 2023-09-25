@@ -1,0 +1,5 @@
+test_value = 
+print(test_value)
+def fun_test(value):
+	return value
+fun_test(test_value)

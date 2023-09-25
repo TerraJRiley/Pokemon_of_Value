@@ -1,0 +1,118 @@
+## Needed:
+ 1.) Imports
+ 2.) Classification Metrics
+ #==================================
+
+# For general Regression.
+def RMSE(y_real, y_hat):  # Goal=0, Avg Distance
+    return np.sqrt(metrics.mean_squared_error(y_real, y_hat))
+
+#==================================
+# For Neural Network
+def rmse(y_true, y_pred):
+    return backend.sqrt(backend.mean(backend.square(y_pred - y_true), axis=-1))
+
+#====================================
+# All Other Important Regression Metrics
+
+def Reg_metrics(y_real, y_hat):
+    print('RMSE            :',np.sqrt(metrics.mean_squared_error(y_real, y_hat)))   # Goal=0, Avg Distance
+    print('Median Abs Error:',metrics.median_absolute_error(y_real,y_hat))          # Goal=0, Median Distance
+    print('R Squared       :',metrics.r2_score(y_real, y_hat))          # Goal=1, Percent model can explain
+    return
+
+#====================================
+
+
+def rmse_score(model, 
+               X_train = X_train,
+               X_test = X_test,
+               y_train = y_train,
+               y_test = y_test):
+    train_score = mean_squared_error(y_true = y_train,
+                                     y_pred = model.predict(X_train)) ** 0.5
+    test_score = mean_squared_error(y_true = y_test,
+                                    y_pred = model.predict(X_test)) ** 0.5
+    print(str(model)[0:20])
+    print("Train:" + str(train_score))
+    print("Test :" + str(test_score))
+    print('')
+    return
+
+#====================================
+def f1_score(model, 
+               X_train = Xr_train,
+               X_test = Xr_test,
+               y_train = yr_train,
+               y_test = yr_test):
+    train_score = f1_score(y_train,
+                           model.predict(X_train))
+    test_score  = f1_score(y_test,
+                           model.predict(X_test))
+    print(str(model)[0:20])
+    print("Train:" + str(train_score))
+    print("Test :" + str(test_score))
+    print('')
+    return
+
+#====================================
+def run_model(model, X_train, X_test, y_train, y_test, results_dataframe, save = True, 
+              rando_state = 76, is_neural_network = False, 
+              NN_epochs = 10, NN_batch_size = 32, NN_verbose = 0):
+
+    #X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = rando_state)
+
+model      = model.fit(X_train, y_train)
+pred_train = model.predict(X_train)
+pred_test  = model.predict(X_test)
+dict_model = {'model' : re.findall(r'^[^@]+\(', str(model))[0].strip("("),
+         'parameters' : model.get_params()}
+        
+
+    
+    # Adding non-model dependant information to dict_model
+    dict_model['time']               = datetime.fromtimestamp(time()).strftime('%m/%d/%Y, %H:%M:%S')
+    dict_model['features']           = [feature for feature in X.columns]
+    dict_model['train_RMSE']         = np.sqrt(metrics.mean_squared_error(y_train, pred_train))
+    dict_model['test_RMSE']          = np.sqrt(metrics.mean_squared_error(y_test, pred_test))
+    
+    # Printing current results
+    print(dict_model['model'] + ' Train')
+    print('RMSE : ' + str(dict_model['train_RMSE']))
+    print('\n' + dict_model['model'] + ' Test')
+    print('RMSE : ' + str(dict_model['test_RMSE']))
+    
+    # Saving current results
+    results_dataframe = results_dataframe.append(dict_model, ignore_index=True)
+    if save == True:
+        results_dataframe.to_csv('./data/modeling_results_' + datetime.fromtimestamp(time()).strftime('%m_%d_%Y')
+                          , index = False)
+    
+    return results_dataframe
+
+
+
+
+
+#====================================
+
+# Alternmative Measures for above Function
+# Adding non-model dependant information to dict_model
+    dict_model['time']               = datetime.fromtimestamp(time()).strftime('%m/%d/%Y, %H:%M:%S')
+    dict_model['features']           = [feature for feature in X.columns]
+    dict_model['train_RMSE']         = np.sqrt(metrics.mean_squared_error(y_train, pred_train))
+    #dict_model['train_Median_error'] = metrics.median_absolute_error(y_train, pred_train)
+    #dict_model['train_R_squared']    = metrics.r2_score(y_train, pred_train)
+    dict_model['test_RMSE']          = np.sqrt(metrics.mean_squared_error(y_test, pred_test))
+    #dict_model['test_Median_error']  = metrics.median_absolute_error(y_test, pred_test)
+    #dict_model['test_R_squared']     = metrics.r2_score(y_test, pred_test)
+    
+    # Printing current results
+    print(dict_model['model'] + ' Train')
+    print('RMSE : ' + str(dict_model['train_RMSE']))
+    #print('Median Abs Error : ' + str(dict_model['train_Median_error']))
+    #print('R Squared        : ' + str(dict_model['train_R_squared']))
+    print('\n' + dict_model['model'] + ' Test')
+    print('RMSE : ' + str(dict_model['test_RMSE']))
+    #print('Median Abs Error : ' + str(dict_model['test_Median_error']))
+    #print('R Squared        : ' + str(dict_model['test_R_squared']))

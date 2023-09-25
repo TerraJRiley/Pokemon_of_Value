@@ -1,0 +1,64 @@
+
+# Return column data types
+df.dtypes
+
+
+# Alternative remaping code
+df['column'] = [float(x.replace('%','')) for x in df['column']]
+
+
+# Using .items() to make a column into a dictionary
+dict = {}
+for key, value in df['column'].items():
+    dict[key] = value
+
+# Main ways to adjust indexes
+df.reset_index(inplace=True)
+df.set_index('column', inplace = True)
+
+# Computing Standard Deviation with list comprehension & no loops (don't know why it's "pop"
+def pop_std(the_column):
+    return round(((sum([(x - the_column.mean())**2 for x in the_column]))/len(the_column))**(1/2))
+pop_std(test_df['Sat_Total'])
+# Can also do Standard Deviation with this:
+print(test_df['Sat_Total'].std())
+
+# Mean of the Column
+df.mean()
+
+# Null Dealings
+titanic['Cabin'].fillna('¯\_(ツ)_/¯')
+titanic.isna().sum()
+
+# SORT VALUES
+titanic['Fare'].sort_values(ascending = False)
+
+# Simple Concat??
+the_frames = [df,features]
+Flowers = pd.concat(the_frames, sort=False, axis = 1)
+
+
+
+# Unmarked but important
+df.describe() (return count, mean, std, min, and %iles)
+df.info()
+
+
+
+df[~mask] (Select opposite of the mask)
+df[(df['Events'] > 150) & (df['Hour'] < 15)]
+df[(df['Events'] > 150) | (df['Hour'] > 15)]
+df[ df['Hour'].isin([4, 15]) ] #return rows with specific values(?)
+
+pd.get_dummies(titanic['Name'])
+
+
+# Dictionary Method for renaming
+df.rename(columns={}, inplace=True)
+
+
+
+
+
+
+

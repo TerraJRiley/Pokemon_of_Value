@@ -1,0 +1,229 @@
+| Thing             | Main Matplotlib               | Sub Plt               | Seaborn                           |
+|-------------------|-------------------------------|-----------------------|-----------------------------------|
+| Idea              | + to plt each line            |fig, ax = plt.subplots(ncols, nrows) (ax[#,#] for ea plt)| |
+| Bar               | plt.bar(x, height)            |                       |                                   |
+| Histagram         | plt.hist(x, bins)(Lists Args) |                       |                                   |
+| Scatter           | plt.scatter(x, y)    (Args)   |                       |                                   |
+| Line Graph        | plt.plot([y's_ea_x(#,#)(#,])  | ax[#]plot()           | sns.lineplot(x,y)(Args)           |
+| FacetGrid (Chi2)  |                               |                       | sns.FacetGrid(df, col, row)       |
+| ...define inr plts|                               |                       |.map(plt.graph, bins, range)       |
+| X/Y Labels        | plt.zlabel("")                | ax[#].set_xlabel()    |                                   |
+| Title             | plt.title("")                 | ax[#].set_title()     |                                   |
+| Figure Size       | plt.figure(figsize)           | plt.subplots(figsize) |                                   |
+|Customize X/Y Ticks| plt.zticks([labels], rotation)|
+| Add a Line        | plt.axvline(x)                |
+| Set Z Value Limit | plt.gca().set_zlim([#,#])     |
+| Add Legend        | plt.legend()                  |
+
+
+The six "lessons" of visualizing data.
+ - Lesson 1: Understand the context. (Who, What, How)
+ - Lesson 2: Choose an appropriate visual display. (What type of graph?)
+ - Lesson 3: Eliminate clutter. (What can I delete or make more subtle?)
+ - Lesson 4: Focus attention where you want it. (How do I emphasize important things?)
+ - Lesson 5: Think like a designer. (How do I organize my visualization?)
+ - Lesson 6: Tell a story! (How do I communicate my visualization?)
+
+
+-------------------------------------------
+
+## Set Up Options
+
+# import scipy.stats as stats
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+# Color Options
+colors = {'blue': '#729ECE',
+          'brown': '#A8786E',
+          'green': '#67BF5C',
+          'grey': '#A2A2A2',
+          'orange': '#FF9E4A',
+          'pink': '#ED97CA',
+          'purple': '#AD8BC9',
+          'red': '#ED665D',
+          'teal': '#6DCCDA',
+          'yellow': '#CDCC5D'}
+
+# Style Options
+sns.set_style('darkgrid')
+sns.set_style('whitegrid')
+plt.style.use('fivethirtyeight')
+
+
+# Basic Non-Visual EDA
+
+df.dtypes                           # Data Types of cols
+df.column.unique()                  # Unique Values in col
+df.describe().T                     # Summary Stats
+df.info                             # Info
+df['column'].value_counts(normalize=True)
+
+# Correlations between two seperate columns w/o a whole thing
+print(np.corrcoef(df['column_1'].values, df['column_2'].values))
+
+# SCATTER
+
+
+## PLT
+plt.figure(figsize=(10, 10))
+plt.scatter(y = df['column_one'],
+            x = df['column_two'],
+            color = colors);
+
+## PD
+df.plot('math', 'num_awards', kind = 'scatter')
+
+
+## SNS Dirty
+axes = plt.gca()
+axes.set_xlim([-1,35])
+axes.set_ylim([-1,35])
+sns.scatterplot(df['column_one'], df['column_two'], hue= df['column_three'], alpha = 0.1);
+
+# BOXPLOT
+
+## SNS
+sns.boxplot(df['column'],
+            data = df
+                orient='v' or 'h',
+                fliersize=8,
+                linewidth=#,
+                notch = True,
+                saturation=0.5,
+                ax=ax,
+                by = "column?");
+
+# LINEPLOT
+
+sns.lineplot(data = df);
+
+====================================================
+# HISTAGRAM
+
+## PLT
+plt.hist(df['column'], bins = 10, color='g', alpha = 0.1);
+plt.xlabel("Label", position = (0,0), ha = 'left', color = 'grey') # (x,y)
+plt.ylabel("label", position = (0, 1), ha = 'right', color = 'grey'); # (x,y);
+
+## PLT.plot
+figure, ax = plt.subplots(nrows = 2, ncols = 1, figsize = (15,15))
+test_df['column_one'].plot(ax = ax[0], kind = 'hist')
+test_df['column_two'].plot(ax = ax[1], kind = 'hist');
+
+## PD
+df.plot(x='col1', y='col2', title="Title")
+df.hist('col');
+
+## SNS Countplot
+sns.countplot(raw_df['col']);
+##Also
+sns.countplot(x="col", data=df);
+
+------------
+# Other Example DIRTY
+plt.hist(df['col1'],bins= len(df['col1'].unique()));
+
+
+====================================================
+# BARPLOT
+
+## PLT
+plt.figure(figsize = (16,6))
+plt.bar(height = df['Column?'],  # List of numbers?
+        x = df.columns);
+
+## SNS
+sns.barplot(data = df,
+            x = "column_one",
+            y = "column_two");
+
+
+
+
+====================================================
+# PAIRPLOT
+
+sns.pairplot(df, kind = "reg", 
+             hue = 'column',
+             plot_kws = {'line_kws' : {'color' : 'red'}, 
+                         'scatter_kws' : {'alpha' : 0.1}})
+             # Alt
+             # plot_kws={'alpha': 0.05});
+
+# With specific rows, only
+sns.pairplot(data=temp_df,
+            x_vars=['col1'],
+            y_vars=['col2'])
+
+
+====================================================
+# HEATMAP
+
+# SNS
+#plt.figure(figsize= (9,9))
+sns.heatmap(df.corr(), 
+            cbar=False, 
+            linewidths= .01, 
+            linecolor='black', 
+            cmap=sns.color_palette("Purples"),
+            annot=True);
+
+
+=======================================================
+# Jointplot
+sns.jointplot(y_test, lin_reg.predict(X_test))
+
+=======================================================
+# Facet Grid
+Grid = sns.FacetGrid(df, col="Col1", row="col2", margin_titles=True)
+Grid.map(plt.hist,'col2?', bins = num, range = (num,num));
+
+=======================================================
+# Graph Alterations
+# Colors: plt.colors.cnames
+
+# For layering on top:
+plt.hist(df['column_1'], color='g')
+plt.hist(df['column_2'], color='b')
+
+# For layering next to:
+fig, ax = plt.subplots(2, 
+                    sharex = True,  # Scale x together
+                    sharey = True,    
+                   figsize = (1,1)) # Size
+ax[0].hist(df['column_1'],          # 
+           bins = 10,               # Bins
+           color='b',               # Color
+           alpha = 0.5,             # Transparancy
+           label = 'col_1')         # For .legend()
+ax[1].hist(df['column_2'])          # 
+
+# Subplot Example
+
+fig, axes = plt.subplots(3, figsize = (20,10))
+sns.countplot(df['col'], ax= axes[0])
+sns.countplot(df['col'], ax = axes[1])
+sns.countplot(df['col'], ax = axes[2]);
+
+# Labels for Words
+plt.xlabel("measure",               # Alt: .ylabel
+           position = (0,0),        # (x-pos, y-pos)?
+           ha = 'left',             # Horizontal
+           color = 'grey') # (x,y)
+
+plt.legend()
+plt.title()                         # Title ~= Subtitle
+plt.suptitle("subtitle\n.",         # Subtitle
+             position = (0,1),      # Position
+             ha = 'left',           # Horizontal
+             fontsize=16,           # Size, Font
+             va = 'top');           # Vertical
+
+
+# Shifting Graph Coordinates (in a Scatter plot)
+axes = plt.gca()
+axes.set_xlim([num_one,num_two])
+axes.set_ylim([num_one,num_two])
+sns.scatterplot(df['column_one'], df['column_two']);

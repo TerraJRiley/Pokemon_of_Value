@@ -1,0 +1,54 @@
+
+
+
+
+
+
+
+
+
+
+body {
+    background-color: lightblue;
+}
+
+h1 {
+    color: navy;
+    margin-left: 20px;
+}
+
+
+For tags:
+
+p {
+  background: red;
+}
+For classes:
+
+.getbold {
+  font-size: 21px;
+}
+For ids:
+
+#header {
+  background: blue;
+  font-size: 21px;
+}
+
+
+
+Select only the last li tag:
+
+li:last-child {
+  background: blue;
+}
+Select only links with an https:
+
+a[href^="https"] {
+  font size: 14;
+}
+Select only p elements where the parent is a div:
+
+div > p {
+  font-size: 21px;
+}

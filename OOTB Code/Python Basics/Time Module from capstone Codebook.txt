@@ -1,0 +1,19 @@
+import time
+time.time() # The time now, measured in seconds
+
+#from time import time
+#from datetime import datetime
+#datetime.fromtimestamp(time()).strftime('%m/%d/%Y, %H:%M:%S')
+
+
+t0 = time.time()
+
+# Code goes here.
+
+t1 = time.time()
+print(t1 - t0)
+
+
+# Quality of life
+def now():
+    return datetime.fromtimestamp(time()).strftime('%m/%d/%Y, %H:%M:%S')

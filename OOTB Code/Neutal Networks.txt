@@ -1,0 +1,189 @@
+Note: Build code to go through and label al the features as to which are more effective and which are less effective.
+
+[Automated means of Feature Selection.](http://scikit-learn.org/stable/modules/feature_selection.html)
+
+#### Forward Selection
+1. Start with null model (just $\hat{y} = \beta_0$).
+2. Add one feature by testing all possible features $X_i$ and picking the **best** based on some metric.
+3. Repeat until a stopping condition is met.
+
+#### Backward Selection
+1. Start with full model ($\hat{y} = \beta_0 + \beta_1X_1 + \cdots \beta_pX_p$).
+2. Remove one feature by testing all possible features $X_i$ and picking the **worst** based on some metric.
+3. Repeat step 2 until a stopping condition is met.
+
+
+# Imports
+
+# Neural Network Imports
+from keras.models import Sequential
+from keras.layers import Dense, LSTM, Dropout, Masking, Embedding, Flatten
+from keras import backend
+
+
+=====================================
+
+# From Class
+# Imports
+from sklearn.model_selection import train_test_split
+from keras.models import Sequential
+from keras.layers import Dense, Conv2D, Input, Dropout, Activation, Flatten, MaxPooling2D, Conv3D
+from keras.utils import to_categorical
+from sklearn.preprocessing import MinMaxScaler
+
+
+-------------------------------------------------------------
+
+
+from sklearn.preprocessing import StandardScaler #Usually for Bounded or unbounded scale, don't remember which
+from sklearn.model_selection import train_test_split
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.utils import to_categorical # For the MultiClass Classification
+
+
+
+# DIRECTLY FROM CODEBOOK
+
+#First Train/Test Split & Scale:
+X_train, X_test, y_train, y_test = train_test_split(X,y)
+ss = StandardScaler()
+X_train_scaled = ss.fit_transform(X_train)
+X_test_scaled = ss.transform(X_test)
+
+## Regression
+
+model = Sequential()                                # Note: Start here.  Grow & add after 1st model
+model.add(Dense(neurons_for_this_layer,             # Start == to # of features, but not over 100
+          activation = 'relu',                      # Default.  Rarely need to change
+          input_dim=X_train.shape[1]))   # Keeps consistent without hasstle, not needed post-1st layer
+#model.add(Dense(neurons_for_this_layer, activation = 'relu')) # Here, have another layer
+model.add(Dense(1, activation=None))     # Output layer.  Does not change from this for Regression
+model.compile(loss='mean_squared_error',            # Compile tells Keras we're done adding layers
+             optimizer='adam')                      # Default.  Rarely need to change
+results = model.fit(X_train_scaled, y_train, 
+                    epochs= 10,                               # Default is 1, but start with about 10
+                    batch_size = 32,                          # Skip if data is small. Should be powers of 2
+                    validation_data = (X_test_scaled,y_test)) # Note: Val Loss is our Test loss
+                    #verbose=0,                               # This will silence printing output
+model.predict(X_test_scaled)
+
+
+## Binary Classification
+
+# Ensure to stratify the train/test when you do that, for this model type
+model = Sequential()                                # Note: Start here.  Grow & add after 1st model
+model.add(Dense(neurons_for_this_layer,             # Start == to # of features, but not over 100
+          activation = 'relu',                      # Default.  Rarely need to change
+          input_dim=X_train.shape[1]))              # Keeps consistent without hasstle, not needed post-1st layer
+#model.add(Dense(neurons_for_this_layer, activation = 'relu')) # Here, have another layer
+model.add(Dense(1, activation='sigmoid')) # Output Layer.  Not to be changed from this for Binary Classification
+model.compile(optimizer='adam',
+              loss='binary_crossentropy',           # Loss function for Binary Classification
+#             metrics=['accuracy']                  # Optional metric
+             )
+
+results = model.fit(X_train_scaled, y_train,
+                    epochs=10,                      # Default is 1, but start with about 10
+                    #batch_size = 32,               # Unsure if useable in this model, but whatever
+                    #verbose=0,                     # This will silence printing output
+                    validation_data=(X_test_scaled, y_test))
+
+
+
+## Multiclass Classification
+
+y_train = to_categorical(y_train) # Note: Multi-classification specific prep
+y_test  = to_categorical(y_test)  # Note: This one-hot encodes the targets
+
+# The actual model itself
+model = Sequential()
+model.add(Dense(4,                                # Start == to # of features, but not over 100
+               activation='relu',                 # Default.  Rarely Change
+               input_dim=X_train_scaled.shape[1]))
+model.add(Dense(num_of_classes_we_are_predicting, # This is the Output Layer
+                activation='softmax'))            # Activation is specific to the output layer
+model.compile(optimizer='adam',                   # Default.  Rarely change.
+#             metrics=['accuracy'],               # This is optional, if we wish to track it
+             loss = 'categorical_crossentropy')   # Default for this type?
+results = model.fit(X_train_scaled, y_train,
+                    validation_data = (X_test_scaled, y_test),
+                    #verbose=0,                   # This will silence printing output
+                    epochs = 10)                  # One of the first things to change
+
+
+-------------------------------------------
+# Reshaping Examples
+## Ref: Lab 10.01
+weights = weights.reshape(10,1)
+
+output_bias = np.zeros(10).reshape(10,1)
+
+
+# Custom Activation Functions
+
+preds = []
+
+for x in X:
+    hidden_output = forward_one_layer(x,
+                                      weights,
+                                      bias,
+                                      activation_function = logistic)
+
+
+def linear(x):
+    return x
+
+def logistic(x):
+    return 1/(1+np.exp(-x))
+
+def inverse_logistic(x):
+#    log(p / (1 - p))
+    return np.log(x / (1 - x))
+
+def forward_one_layer(input_layer, weights, biases, activation_function):
+    return activation_function(np.dot(weights, input_layer)
+
+    output = forward_one_layer(hidden_output,
+                               output_weights,
+                               output_bias,
+                              activation_function = linear)
+    preds.append(output[0][0])
+preds[:5]
+
+-----------------------------------------
+
+# Recurrent Neural Network
+
+model = Sequential()
+model.add(LSTM(units_of_starter_nodes_Ithink, 
+               input_shape = (X.shape[1],X.shape[2])))
+model.add(Dense(y))
+
+
+
+
+#=========================================
+
+# Visualisations for classification Models
+# Plots to view Loss/Accuracy over epoche's
+axes = plt.gca()
+#axes.set_xlim([-1,35])
+axes.set_ylim([-0.5,10])
+plt.plot(results.history['val_loss'], label='Test Loss')
+plt.plot(results.history['loss'], label='Train Loss')
+plt.legend();
+plt.plot(results.history['val_mean_squared_error'], label='Test RMSE')
+plt.plot(results.history["mean_squared_error"], label='Train RMSE')
+plt.legend();
+
+#Alternative
+fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(15,4))
+
+ax[0].plot(results.history['loss'])
+ax[0].set_title("Loss")
+ax[0].set_xlabel("epochs")
+
+ax[1].plot(results.history["mean_squared_error"])
+ax[1].set_title("Accuracy")
+ax[1].set_xlabel("epochs")

@@ -1,0 +1,107 @@
+# Imports
+# Natural Language Processing libraries, initiations and functions
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel 
+from nltk.stem import WordNetLemmatizer
+from nltk import word_tokenize
+from nltk.corpus import stopwords
+
+
+# Preprocessing
+def preprocess(text):
+    text = re.sub(r'[^a-zA-Z]',' ', text.lower())
+    tokens = word_tokenize(text)
+    lemmer = WordNetLemmatizer()
+    stop_words = stopwords.words("english")
+    return " ".join([lemmer.lemmatize(word) for word 
+                     in tokens if len(word) > 1 and not word in stop_words])
+
+
+
+# Cvec, Standard
+cvec = CountVectorizer(analyzer = "word",
+                       min_df = 2,
+                       preprocessor = preprocess,
+                       stop_words = 'english') 
+# Cvec DF
+df_words = pd.DataFrame(cvec.fit_transform(df['doc_column']).todense(), 
+                        columns=cvec.get_feature_names())
+
+
+
+
+#============================================
+
+#Cvec with most/all editables.
+cvec = CountVectorizer(analyzer = "word",
+                       tokenizer = tokenizer.tokenize,
+                       preprocessor = None,
+                       stop_words = 'english',
+                       min_df = 2, # This can be a float representing % of documents
+                       max_df = None
+                       ngram_range = (min,max),
+                      max_features = None) 
+
+#=================================================
+
+# Hash Vectorizer
+
+from sklearn.feature_extraction.text import HashingVectorizer
+hvec = HashingVectorizer(analyzer = "word",
+                       min_df = 2,
+                       preprocessor = preprocess,
+                       stop_words = 'english') 
+hvec.fit(corpus)
+df  = pd.DataFrame(hvec.transform(corpus).todense(), index=['Target', 'Not Target'])  
+
+#============================================
+# TF-IDF
+from sklearn.feature_extraction.text import TfidfVectorizer
+tfidf = TfidfVectorizer(#analyzer = "word", 
+                       #min_df = 2,                   Test Values
+                       #ngram_range=(1, 3), 
+                       #preprocessor = preprocess,
+                       #stop_words = 'english')
+tfidf.fit(corpus)
+df  = pd.DataFrame(tfidf.transform(corpus).todense(),
+                   columns=tfidf.get_feature_names(),
+                   index=['Target', 'Not Target'])
+
+
+
+#=================================================
+
+# Sentament
+
+from textblob import TextBlob
+
+def Sentamentize(text):
+    return TextBlob(str(text)).sentiment.polarity
+
+#=================================================
+# NEEDS THE IMPORT
+# LDA: Latent Dirichlet Allocation
+from sklearn.decomposition import LatentDirichletAllocation
+def LDA(df_column, num_topics = 3, num_words = 5):
+    # cols are the words
+    # rows are the topics
+    topic_lists = []
+    lda = LatentDirichletAllocation(n_components=num_topics, 
+                         learning_method='online'
+                   ) # Learning meathod stated for depreciation 
+    lda.fit(cvec.fit_transform(df_column))
+    for ix, topic in enumerate(lda.components_):
+        topic_lists += [[cvec.get_feature_names()[i] for i 
+              in lda.components_[ix].argsort()[:-num_words - 1:-1]]]
+
+    return pd.DataFrame(topic_lists, columns=[ 'word_' + str(i) for i 
+                                          in range(1, num_words+1)], 
+                 index=range(1, num_topics + 1)) 
+
+
+#=================================================
+
+def correlation_of_words(cvec_dfs, target_title = "is_first_df")
+    return df_words.corr().sort_values([target_title])[target_title]
+# df_corrs.tail(20)[18::-1]
+

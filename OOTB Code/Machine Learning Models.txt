@@ -1,0 +1,195 @@
+# Model prep & metric imports
+from sklearn.model_selection import train_test_split
+import sklearn.metrics as metrics
+from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures, MinMaxScaler, Normalizer
+#, Binarizer
+from sklearn.decomposition import PCA
+
+# Imports
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+
+# Regression model imports
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.naive_bayes import GaussianNB
+from xgboost import XGBRegressor
+
+
+#==========================================
+
+
+
+def test_model(df, test_model, features, target = 'Target'):
+    model = test_model
+    X_train, X_test, y_train, y_test = train_test_split(df[features], df[target]) 
+    model = model.fit(X_train,y_train)
+
+    print('Train:', model.score(X_train,y_train))
+    print('Test: ',  model.score(X_test,y_test))
+    return
+
+
+# Simple Model Forms
+
+features = ['columns_etc']
+X = df[features]
+y = df['target']
+
+model = Model(**params).fit(Xtrain,ytrain)
+model.score(Xtrain,ytrain)
+model.score(Xtest,ytest)
+
+#======================================
+
+
+def run_model(model, X_train, X_test, y_train, y_test, results_dataframe, save = True, 
+              rando_state = 76, is_neural_network = False, 
+              NN_epochs = 10, NN_batch_size = 32, NN_verbose = 0):
+
+    #X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = rando_state)
+
+model      = model.fit(X_train, y_train)
+pred_train = model.predict(X_train)
+pred_test  = model.predict(X_test)
+dict_model = {'model' : re.findall(r'^[^@]+\(', str(model))[0].strip("("),
+         'parameters' : model.get_params()}
+        
+
+    
+    # Adding non-model dependant information to dict_model
+    dict_model['time']               = datetime.fromtimestamp(time()).strftime('%m/%d/%Y, %H:%M:%S')
+    dict_model['features']           = [feature for feature in X.columns]
+    dict_model['train_RMSE']         = np.sqrt(metrics.mean_squared_error(y_train, pred_train))
+    #dict_model['train_Median_error'] = metrics.median_absolute_error(y_train, pred_train)
+    #dict_model['train_R_squared']    = metrics.r2_score(y_train, pred_train)
+    dict_model['test_RMSE']          = np.sqrt(metrics.mean_squared_error(y_test, pred_test))
+    #dict_model['test_Median_error']  = metrics.median_absolute_error(y_test, pred_test)
+    #dict_model['test_R_squared']     = metrics.r2_score(y_test, pred_test)
+    
+    # Printing current results
+    print(dict_model['model'] + ' Train')
+    print('RMSE : ' + str(dict_model['train_RMSE']))
+    #print('Median Abs Error : ' + str(dict_model['train_Median_error']))
+    #print('R Squared        : ' + str(dict_model['train_R_squared']))
+    print('\n' + dict_model['model'] + ' Test')
+    print('RMSE : ' + str(dict_model['test_RMSE']))
+    #print('Median Abs Error : ' + str(dict_model['test_Median_error']))
+    #print('R Squared        : ' + str(dict_model['test_R_squared']))
+    
+    # Saving current results
+    results_dataframe = results_dataframe.append(dict_model, ignore_index=True)
+    if save == True:
+        results_dataframe.to_csv('./data/modeling_results_' + datetime.fromtimestamp(time()).strftime('%m_%d_%Y')
+                          , index = False)
+    
+    return results_dataframe
+
+
+
+
+
+# Regressors
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import BaggingRegressor, RandomForestRegressor, AdaBoostRegressor
+#, ExtraTreesRegressor
+from sklearn.svm import SVR
+
+
+scaled_df = pd.DataFrame(StandardScaler().fit_transform(df),
+                         columns = df.columns)
+scaled_df.head()
+
+X = scaled_df.drop(columns = ['target'])
+y = scaled_df['target']
+X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                    test_size = 0.2)
+lin_reg    = LinearRegression().fit(X_train, y_train)
+knn_reg    = KNeighborsRegressor().fit(X_train, y_train)
+cart_reg   = DecisionTreeRegressor().fit(X_train, y_train)
+bag_reg    = BaggingRegressor().fit(X_train, y_train)
+randof_reg = RandomForestRegressor().fit(X_train, y_train)
+ada_reg    = AdaBoostRegressor().fit(X_train, y_train)
+SV_reg     = SVR().fit(X_train, y_train)
+models     = [
+    lin_reg,
+    knn_reg,
+    cart_reg,
+    bag_reg,
+    randof_reg,
+    ada_reg,
+    SV_reg    
+]
+
+
+# Classifiers
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier
+from sklearn.svm import SVC
+
+# Classifications:
+X = scaled_df.drop(columns = ['e401k', 'p401k'])
+y = [1 if scaled_df['e401k'][i] > 0 else 0 for i in range(scaled_df.shape[0])]
+Xr_train, Xr_test, yr_train, yr_test = train_test_split(X, y,
+                                                    test_size = 0.2)
+LogisticRegression().fit(X_train, y_train)
+KNeighborsClassifier().fit(X_train, y_train)
+DecisionTreeClassifier().fit(X_train, y_train)
+BaggingClassifier().fit(X_train, y_train)
+RandomForestClassifier().fit(X_train, y_train)
+AdaBoostClassifier().fit(X_train, y_train)
+SVC().fit(X_train, y_train)
+
+
+
+
+# Multi NB
+from sklearn.naive_bayes import MultinomialNB
+nb = MultinomialNB()
+model = nb.fit(X_train, y_train)
+predictions = model.predict(X_test)
+
+model.score(X_train, y_train)
+model.score(X_test, y_test)
+
+from sklearn.metrics import confusion_matrix
+confusion_matrix(y_test, predictions)
+tn, fp, fn, tp = confusion_matrix(y_test, predictions).ravel()
+print("True Negatives: %s" % tn)
+print("False Positives: %s" % fp)
+print("False Negatives: %s" % fn)
+print("True Positives: %s" % tp)
+
+
+
+# XGBoost
+
+from xgboost import XGBRegressor
+X = df[[]]
+y = df[]
+df_results = run_model(XGBRegressor(objective='reg:squarederror'), X, y, df_results)
+
+import xgboost as xgb
+from xgboost import XGBRegressor
+xgb_regressor=XGBRegressor(max_depth=7, 
+                           n_estimators=500, 
+                           objective="reg:linear", 
+                           min_child_weight = 6,
+                           subsample = 0.87,
+                           colsample_bytree = 0.50,
+                           scale_pos_weight = 1.0,                       
+                           learning_rate=0.1)
+
+xgb_regressor.fit(X_train, y_log, eval_metric=RMSLE)
